@@ -1,5 +1,4 @@
-from datetime import datetime
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -10,30 +9,11 @@ from app.services import get_date_format
 
 
 @pytest.mark.asyncio
-async def test_aggregate_salary():
+async def test_aggregate_salary(client, mock_aggregate, valid_request_data):
     """ Проверка успешной агрегации """
-    mock_cursor = AsyncMock()
-    mock_cursor.to_list.return_value = [
-        {
-            "_id": "2021-12-31T03:00:00",
-            "total": 295,
-            "dt_first": datetime(2022, 1, 1, 3, 28)
-        },
-        {
-            "_id": "2021-12-31T04:00:00",
-            "total": 512,
-            "dt_first": datetime(2021, 12, 31, 22, 56)
-        }
-    ]
-
-    with patch.object(sample_collection, "aggregate", return_value=mock_cursor):
+    with patch.object(sample_collection, "aggregate", return_value=mock_aggregate):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-            request_body = {
-                "dt_from": "2021-12-31T02:00:00",
-                "dt_upto": "2021-12-31T04:00:00",
-                "group_type": "hour"
-            }
-            response = await ac.post("/salaries/aggregate", json=request_body)
+            response = await ac.post("/salaries/aggregate", json=valid_request_data)
             assert response.status_code == 200
             data = response.json()
             assert len(data["dataset"]) == 3
