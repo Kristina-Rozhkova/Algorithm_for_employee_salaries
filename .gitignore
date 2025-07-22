@@ -16,3 +16,4 @@ env
 .vscode/
 .coverage
 db.sqlite3
+htmlcov
