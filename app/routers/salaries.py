@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.database import sample_collection
 from app.models import SalaryAggregationRequest, SalaryAggregationResponse
-from app.services import get_date_grouping
+from app.services import get_date_format
 
 router = APIRouter(
     prefix="/salaries", tags=["Зарплаты"], responses={404: {"description": "Not found"}}
@@ -59,13 +59,13 @@ async def aggregate_salary(request: SalaryAggregationRequest):
     }
     ```
     """
-    group_by_dt = get_date_grouping(request.group_type)
+    format_date = get_date_format(request.group_type)
 
     pipeline = [
         {"$match": {"dt": {"$gte": request.dt_from, "$lte": request.dt_upto}}},
         {
             "$group": {
-                "_id": group_by_dt,
+                "_id": format_date,
                 "total": {"$sum": "$value"},
                 "dt_first": {"$first": "$dt"},
             }

@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 
 
-def get_date_grouping(group_type: str) -> dict:
-    """Группировка выплат сотрудников по определенному промежутку времени: час, день, месяц"""
+def get_date_format(group_type: str) -> dict:
+    """ Преобразование формата дат в соответствии с выбранной группировкой: час, день, месяц """
     if group_type not in ["hour", "day", "month"]:
         raise HTTPException(
             status_code=400,

@@ -28,7 +28,7 @@ class SalaryAggregationResponse(BaseModel):
     labels: список меток времени в формате ISO 8601, соответствующих элементам dataset.
     """
 
-    dataset: list[float]
+    dataset: list[int]
     labels: list[str]
 
 

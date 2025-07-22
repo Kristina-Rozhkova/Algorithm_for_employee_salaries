@@ -8,6 +8,7 @@ from aiogram.types import CallbackQuery, Message
 import app.keyboards as kb
 from app.models import SalaryAggregationRequest, SalaryAggregationStates
 from app.routers.salaries import aggregate_salary
+from app.validators import validate_iso_datetime, date_difference_check
 
 router = Router()
 
@@ -42,19 +43,36 @@ async def handle_group_type(callback: CallbackQuery, state: FSMContext):
 
 @router.message(SalaryAggregationStates.dt_from)
 async def aggregation_dt_from(message: Message, state: FSMContext):
-    await state.update_data(dt_from=message.text)
-    await state.set_state(SalaryAggregationStates.dt_upto)
-    await message.answer("Введите конец периода в формате 2022-09-01T00:00:00")
+    try:
+        validate_iso_datetime(message.text)
+
+        await state.update_data(dt_from=message.text)
+        await state.set_state(SalaryAggregationStates.dt_upto)
+        await message.answer("Введите конец периода в формате 2022-09-01T00:00:00")
+
+    except ValueError as e:
+        await message.answer(str(e))
 
 
 @router.message(SalaryAggregationStates.dt_upto)
 async def aggregation_dt_upto(message: Message, state: FSMContext):
-    await state.update_data(dt_upto=message.text)
-    data = await state.get_data()
-    request = SalaryAggregationRequest(
-        dt_from=datetime.fromisoformat(data["dt_from"]),
-        dt_upto=datetime.fromisoformat(data["dt_upto"]),
-        group_type=data["group_type"],
-    )
-    result = await aggregate_salary(request)
-    await message.answer(f'Данные: {result["dataset"]}\nМетки: {result["labels"]}')
+    try:
+        await state.update_data(dt_upto=message.text)
+        data = await state.get_data()
+        validate_iso_datetime(message.text)
+
+        dt_from = datetime.fromisoformat(data["dt_from"])
+        dt_upto = datetime.fromisoformat(message.text)
+
+        if not date_difference_check(dt_from, dt_upto):
+            raise ValueError("Конечная дата должна быть позже начальной")
+
+        request = SalaryAggregationRequest(
+            dt_from=datetime.fromisoformat(data["dt_from"]),
+            dt_upto=datetime.fromisoformat(data["dt_upto"]),
+            group_type=data["group_type"],
+        )
+        result = await aggregate_salary(request)
+        await message.answer(f'Данные: {result["dataset"]}\nМетки: {result["labels"]}')
+    except ValueError as e:
+        await message.answer(str(e))

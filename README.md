@@ -113,8 +113,9 @@ Bot:
 │ │ └── salaries.py # Эндпоинты FastAPI
 │ ├── tests/
 │ │ ├── test_api.py # Тестирование эндпоинтов
-│ │ └── test_bot.py # Тестирование бота
+│ │ └── test_handlers.py # Тестирование ручек бота
 │ ├── services.py # Бизнес-логика
+│ ├── validators.py # Валидация формата даты
 │ └── main.py # Точка входа
 ├── requirements.txt # Зависимости
 ├── .env.sample # Переменные окружения

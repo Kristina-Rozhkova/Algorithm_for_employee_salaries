@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
-from app.hanblers import router
+from app.handlers import router
 from app.routers import salaries
 
 load_dotenv()
