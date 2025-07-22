@@ -8,7 +8,7 @@ from aiogram.types import CallbackQuery, Message
 import app.keyboards as kb
 from app.models import SalaryAggregationRequest, SalaryAggregationStates
 from app.routers.salaries import aggregate_salary
-from app.validators import validate_iso_datetime, date_difference_check
+from app.validators import date_difference_check, validate_iso_datetime
 
 router = Router()
 

@@ -1,7 +1,8 @@
+from datetime import datetime
 from unittest.mock import AsyncMock, patch
+
 import pytest
-from httpx import AsyncClient, ASGITransport
-from datetime import datetime, timedelta
+from httpx import ASGITransport, AsyncClient
 
 from app.database import sample_collection
 from app.main import app
@@ -25,7 +26,7 @@ async def test_aggregate_salary():
         }
     ]
 
-    with patch.object(sample_collection, "aggregate", return_value=mock_cursor) as mock_aggregate:
+    with patch.object(sample_collection, "aggregate", return_value=mock_cursor):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
             request_body = {
                 "dt_from": "2021-12-31T02:00:00",

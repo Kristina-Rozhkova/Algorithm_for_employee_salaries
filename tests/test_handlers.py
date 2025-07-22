@@ -1,11 +1,13 @@
+from datetime import datetime
+from unittest.mock import AsyncMock, patch
+
 import pytest
 from aiogram import types
-from unittest.mock import AsyncMock, patch
-from datetime import datetime
 from aiogram.fsm.context import FSMContext
-from app.models import SalaryAggregationStates, SalaryAggregationRequest
-from app import handlers
+
 import app.keyboards as kb
+from app import handlers
+from app.models import SalaryAggregationRequest, SalaryAggregationStates
 
 
 @pytest.mark.asyncio
